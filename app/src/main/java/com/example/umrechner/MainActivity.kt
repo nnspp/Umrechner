@@ -5,16 +5,21 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -31,9 +36,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import com.example.umrechner.ui.theme.UmrechnerTheme
 
 /* Lesen lohnt sich noch nicht: Alles noch Kladderadatsch
@@ -51,6 +58,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
 
 @Preview
 @Composable
@@ -80,14 +88,13 @@ fun UnitConverter() {
 @Composable
 fun DropdownMenufun(selectedConversion: String, onOptionSelected: (String) -> Unit){
     var expanded by remember { mutableStateOf(false) }
-
         Box{
             Spacer(modifier = Modifier.width(16.dp))
             Button(onClick = {expanded = !expanded}) {
                 Text("Auswahl")
                 Icon(Icons.Default.ArrowDropDown, contentDescription = "Arrow Down")
             }
-            /*ständig fehler, wenn Nutzung DropdownMenuItem nach ILIAS pdf höa*/
+            /*ständig fehler, wenn Nutzung DropdownMenuItem nach ILIAS pdf höa*/ // <- was bedeutet das
             DropdownMenu(
                 expanded = expanded, onDismissRequest = {expanded = false})
                 {
@@ -107,12 +114,14 @@ fun DropdownMenufun(selectedConversion: String, onOptionSelected: (String) -> Un
         }
 }
 
+
 @Composable
 fun SolveButton(onClick:() -> Unit){
     Button(onClick=onClick){
         Text("Ausrechnen!")
     }
 }
+
 /*Option 2: ist erstmal ohne Berechnung vom genauen Alter! Option 3: idfk wtf? 1ct = 1 sek*/
 fun convert(inputValue: String, selectedConversion: String): String {
     val value = inputValue.toDouble()
@@ -127,4 +136,3 @@ fun convert(inputValue: String, selectedConversion: String): String {
         "Nicht gültig"
         }
     }
-}
