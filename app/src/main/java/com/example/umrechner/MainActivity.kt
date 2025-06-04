@@ -1,5 +1,6 @@
 package com.example.umrechner
 
+import android.R.attr.value
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -43,12 +44,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             UmrechnerStart()
-
-//            UmrechnerTheme {
-//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    UnitConverter()
-//                }
-//            }
         }
     }
 }
@@ -80,36 +75,48 @@ fun UmrechnerStart() {
             modifier = Modifier.padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            TestSqmConverter()
-//            TestDateConverter()
-//            TestMoneyConverter()
+            SqmConverter() // Quadratmeter in Fußballfelder
+//            TestDateConverter() // Geburtsdatum -> Alter in Minuten
+//            TestMoneyConverter() // Cent in Jahre
         }
     }
 }
 
 @Composable
-fun TestSqmConverter() {
+fun SqmConverter() {
+    Column(
+        modifier = Modifier
+            .padding(all = 8.dp)
+            .fillMaxWidth()
+    ) {
+        var sqmErgebnis by remember { mutableStateOf("") }
 
-    Row(modifier = Modifier
-        .padding(all = 8.dp)
-        .fillMaxWidth()
+        // Eingabe und Button für m² in Fußballfelder
+        Row(modifier = Modifier
+            .padding(all = 8.dp)
+            .fillMaxWidth()
         ) {
-        var text by remember { mutableStateOf("") }
-        TextField(
-            modifier = Modifier.weight(1.95f),
-            value = text,
-            onValueChange = { text = it},
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), //damit auch nur Zahlen reinkommen
-            label = { Text(text = "m² in Fußballfelder") },
-            placeholder ={ Text(text = "Eingeben") },
-        )
-        Spacer(modifier = Modifier.weight(0.1f))
-        TestSqmButton(
-            onClick = {},
-            modifier = Modifier.weight(0.95f),
-            wert = text
-        )
+            var text by remember { mutableStateOf("") }
+            TextField(
+                modifier = Modifier.weight(1.95f),
+                value = text,
+                onValueChange = { text = it},
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // beschränkt die Eingabe auf Zahlen
+                label = { Text(text = "m² in Fußballfelder") },
+                placeholder ={ Text(text = "Eingeben") },
+            )
+            Spacer(modifier = Modifier.weight(0.1f))
+            TestSqmButton(
+                onClick = {},
+                modifier = Modifier.weight(0.95f),
+                wert = text
+            )
+        }
+        // Ergebnis
+        Text("Das sind $sqmErgebnis Fußballfelder")
     }
+
+
 }
 
 @Composable
@@ -127,6 +134,23 @@ fun TestSqmButton(onClick: () -> Unit, modifier: Modifier, wert: String) {
     ) {
         Text("Ausrechnen")
     }
+}
+
+@Composable
+fun SqmButton(onClick: () -> Unit, modifier: Modifier, wert: String) {
+    OutlinedButton(onClick = {
+        onClick()
+        calculateSqm(wert)
+    }
+    ) {
+        Text("Ausrechnen")
+    }
+}
+
+fun calculateSqm(wert: String): String {
+    val df = DecimalFormat ("#.##")
+    df.roundingMode = RoundingMode.DOWN
+    return df.format(wert.toDouble() / 7140)
 }
 
 @Composable
