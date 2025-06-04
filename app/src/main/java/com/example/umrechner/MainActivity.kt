@@ -41,7 +41,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import androidx.compose.ui.util.fastRoundToInt
 import com.example.umrechner.ui.theme.UmrechnerTheme
+import java.math.BigDecimal
+import java.math.RoundingMode
+import kotlin.math.round
+import kotlin.math.roundToLong
 
 /* Lesen lohnt sich noch nicht: Alles noch Kladderadatsch
 * Optionen 2 und 3 sind btw soweit nicht richtig implementiert */
@@ -75,6 +80,10 @@ fun UnitConverter() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Umrechner-App")
+        Text("\n" +
+                "    Flächen in Fußballfelder: Weißte.\n" +
+                "    Alter in Minuten: Du bist X Minuten alt! \n" +
+                "    Geld in Zeit: Geldbetrag in Tage bzw. Jahre.\n")
         OutlinedTextField(label= {Text ("Wert eintragen: qm, Alter, Cent")}, value = inputValue, onValueChange ={inputValue = it})
         Row {
             DropdownMenufun(selectedConversion= selectedConversion, onOptionSelected={selectedConversion=it})
@@ -94,11 +103,10 @@ fun DropdownMenufun(selectedConversion: String, onOptionSelected: (String) -> Un
                 Text("Auswahl")
                 Icon(Icons.Default.ArrowDropDown, contentDescription = "Arrow Down")
             }
-            /*ständig fehler, wenn Nutzung DropdownMenuItem nach ILIAS pdf höa*/ // <- was bedeutet das
             DropdownMenu(
                 expanded = expanded, onDismissRequest = {expanded = false})
                 {
-                val options = listOf("qm in Fußballfeldern","Alter in Minuten","Cent in Sekunden" )
+                val options = listOf("qm in Fußballfeldern","Alter in Minuten","Cent in Zeit" )
 
                     options.forEach{
                         option ->
@@ -125,14 +133,37 @@ fun SolveButton(onClick:() -> Unit){
 /*Option 2: ist erstmal ohne Berechnung vom genauen Alter! Option 3: idfk wtf? 1ct = 1 sek*/
 fun convert(inputValue: String, selectedConversion: String): String {
     val value = inputValue.toDouble()
+//still unfisnished due to AARGH
     return try {
         when (selectedConversion) {
             "qm in Fußballfeldern" -> "${value / 7140} Fußballfelder"
-            "Alter in Minuten" -> "${value * 525600} Minuten"
-            "Cent in Sekunden" -> "${value * 6000} Cent"
+            "Alter in Minuten" -> "${value.roundToLong() * 525600} Minuten"
+            "Cent in Zeit" -> "${value.roundToLong() /144000} Tage oder ${value.roundToLong()/51264000} Jahre"
             else -> "Bitte wähle eine Dropdown Option aus."
         }
     } catch (e: NumberFormatException) {
         "Nicht gültig"
         }
     }
+
+
+/*
+1 Jahr
+12 Monate
+365 Tage
+8760 Stunden
+525600 Minuten
+31536000 Sekunden
+---
+1 Tag
+24 Stunden
+1440 Minuten
+86400 Sekunden
+---
+3e-8 Jahre
+3,8e-7 Monate
+0,00001157 Tage
+0,00027778 Stunden
+0,01666667 Minuten
+1 Sekunde
+ */
