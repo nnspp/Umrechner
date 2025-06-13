@@ -14,7 +14,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -23,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -40,6 +44,7 @@ import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class MainActivity : ComponentActivity() {
@@ -80,13 +85,15 @@ fun UmrechnerStart() {
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             SqmConverter() // Quadratmeter in Fußballfelder
-//            DateConverter() // Geburtsdatum -> Alter in Minuten
             MoneyConverter() // Cent in Jahre
+            TestDateConverter() // Geburtsdatum -> Alter in Minuten
+
         }
     }
 }
 
 // hätte es gerne in mehrere funktionen ausgelagert aber bin zu blöd dafür leider
+// m² werden in Fußballfelder a 7140 m² umgerechnet
 @Composable
 fun SqmConverter() {
     Column(
@@ -114,6 +121,7 @@ fun SqmConverter() {
             Spacer(modifier = Modifier.weight(0.1f))
             OutlinedButton(onClick = {
                 // als sqmErgebnis ausgegeben wird ein string, der das ergebnis auf zwei dezimalstellen gerundet beinhaltet
+                // @TODO stürzt ab wenn kein wert übergeben wird
                 val df = DecimalFormat("#.##")
                 df.roundingMode = RoundingMode.DOWN
                 sqmErgebnis = df.format(tempFlaeche.toDouble() / 7140)
@@ -129,49 +137,6 @@ fun SqmConverter() {
     }
 
 
-}
-
-// Die App fragt das Geburtsdatum ab, berechnet das aktuelle Alter und wie vielen Minuten das entspricht.
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DateConverter() {
-    Column(
-        modifier = Modifier
-            .padding(all = 8.dp)
-            .fillMaxWidth()
-    ) {
-        var geburtsDatum by remember { mutableStateOf(LocalDate.now()) }
-//        var formattedGeburtsDatum by remember {
-//            derivedStateOf {
-//                DateTimeFormatter
-//                    .ofPattern("MMM dd yyyy")
-//                    .format(geburtsDatum)
-//            }
-//        }
-        var tesTest by remember {mutableStateOf("")}
-
-        Row(modifier = Modifier
-            .padding(all = 8.dp)
-            .fillMaxWidth()
-        ) {
-            DatePicker(
-                state = TODO(),
-                modifier = TODO(),
-                dateFormatter = TODO(),
-                title = TODO(),
-                headline = TODO(),
-                showModeToggle = TODO(),
-                colors = TODO()
-            )
-            Spacer(modifier = Modifier.weight(0.1f))
-            OutlinedButton(onClick = {
-
-            }) {
-                Text("Ausrechnen")
-            }
-        }
-        Text("Seit GEBURTSDATUM sind 000000 Minuten vergangen.")
-    }
 }
 
 // Die App fragt nach einem Geldbetrag und gibt Tage bzw. Jahre aus.
@@ -200,6 +165,7 @@ fun MoneyConverter() {
             )
             Spacer(modifier = Modifier.weight(0.1f))
             OutlinedButton(onClick = {
+                // @TODO stürzt ab wenn kein wert übergeben wird
                 moneyErgebnis = tempGeldString.toInt().seconds
 
                 shownGeld = tempGeldString
@@ -211,4 +177,45 @@ fun MoneyConverter() {
         Text("$shownGeld Cent entsprechen $moneyErgebnis") // ist erstmal auf englisch
     }
 }
+
+// Die App fragt das Geburtsdatum ab, berechnet das aktuelle Alter und wie vielen Minuten das entspricht.
+//noch ein neuer versuch
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TestDateConverter() {
+    Column(
+        modifier = Modifier
+            .padding(all = 8.dp)
+            .fillMaxWidth()
+    ) {
+        var geburtsDatum by remember { mutableStateOf(LocalDate.now()) }
+        var alterInMinuten: Duration by remember {mutableStateOf(0.minutes)}
+
+        Row(modifier = Modifier
+            .padding(all = 8.dp)
+            .fillMaxWidth()
+        ) {
+            Button(
+                onClick = {
+
+                },
+                modifier = Modifier.weight(1.95f)
+            ) {
+                Text(text = "Geburtsdatum auswählen (funktioniert nicht :( )")
+            }
+
+            Spacer(modifier = Modifier.weight(0.1f))
+            OutlinedButton(onClick = {
+
+
+            }) {
+                Text("Ausrechnen")
+            }
+        }
+        Text("Seit $geburtsDatum sind ${alterInMinuten.inWholeMinutes} Minuten vergangen.")
+    }
+}
+
+
+
 
