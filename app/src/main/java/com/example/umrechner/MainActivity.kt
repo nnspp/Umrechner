@@ -1,5 +1,6 @@
 package com.example.umrechner
 
+import android.R.attr.duration
 import android.R.attr.onClick
 import android.os.Bundle
 import android.widget.Toast
@@ -25,6 +26,7 @@ import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,6 +39,8 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,8 +94,8 @@ fun SqmConverter() {
             .padding(all = 8.dp)
             .fillMaxWidth()
     ) {
-        var tempFlaeche by remember { mutableStateOf("") } // input vom Eingabefeld
-        var shownFlaeche by remember { mutableStateOf("0") } // der angezeigte input
+        var tempFlaeche by remember { mutableStateOf("") } // input vom Eingabefeld mit dem gerechnet wird, nicht im UI angezeigt
+        var shownFlaeche by remember { mutableStateOf("0") } // der im UI angezeigte input
         var sqmErgebnis by remember { mutableStateOf("0") } // das Ergebnis
 
         // Eingabe und Button für m² in Fußballfelder
@@ -109,9 +113,11 @@ fun SqmConverter() {
             )
             Spacer(modifier = Modifier.weight(0.1f))
             OutlinedButton(onClick = {
+                // als sqmErgebnis ausgegeben wird ein string, der das ergebnis auf zwei dezimalstellen gerundet beinhaltet
                 val df = DecimalFormat("#.##")
                 df.roundingMode = RoundingMode.DOWN
                 sqmErgebnis = df.format(tempFlaeche.toDouble() / 7140)
+
                 shownFlaeche = tempFlaeche
             },
             ) {
@@ -176,9 +182,9 @@ fun MoneyConverter() {
             .padding(all = 8.dp)
             .fillMaxWidth()
     ) {
-        var tempGeld by remember { mutableStateOf("") }
-        var shownGeld by remember {mutableStateOf("0")}
-        var moneyErgebnis by remember { mutableStateOf("0") }
+        var tempGeldString by remember {mutableStateOf("")} // input vom Eingabefeld, nicht im UI angezeigt
+        var shownGeld by remember {mutableStateOf("0")} // der im UI angezeigte input
+        var moneyErgebnis: Duration by remember {mutableStateOf(0.seconds)} // der input als duration wert in sekunden
 
         Row(modifier = Modifier
             .padding(all = 8.dp)
@@ -186,21 +192,23 @@ fun MoneyConverter() {
         ) {
             TextField(
                 modifier = Modifier.weight(1.95f),
-                value = tempGeld,
-                onValueChange = { tempGeld = it},
+                value = tempGeldString,
+                onValueChange = { tempGeldString = it},
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // beschränkt die Eingabe auf Zahlen
-                label = { Text(text = "Geld") },
+                label = { Text(text = "Cent") },
                 placeholder ={ Text(text = "Eingeben") },
             )
             Spacer(modifier = Modifier.weight(0.1f))
             OutlinedButton(onClick = {
-                shownGeld = tempGeld
+                moneyErgebnis = tempGeldString.toInt().seconds
 
+                shownGeld = tempGeldString
             }) {
                 Text("Ausrechnen")
             }
         }
-        Text("$shownGeld € entspricht $moneyErgebnis Jahren")
+        // Ergebnis. shownGeld wird zusammen mit moneyErgebnis geupdated
+        Text("$shownGeld Cent entsprechen $moneyErgebnis") // ist erstmal auf englisch
     }
 }
 
