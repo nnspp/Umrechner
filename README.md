@@ -1,12 +1,12 @@
 # Erstelle eine Android-App, die eine benutzungsfreundliche Oberfläche hat und eine bestimmte Umrechnung durchführt.
 
-### Flächen in Fußballfelder:
+### Flächen in Fußballfelder: (fertig)
 Die App nimmt eine Flächengröße (z. B. in Quadratmetern) und zeigt an, wie viele Fußballfelder das sind. **FERTIG**
 
-### Alter in Minuten: 
+### Alter in Minuten: (nicht fertig)
 Die App fragt das Geburtsdatum ab, berechnet das aktuelle Alter und wie vielen Minuten das entspricht.
 
-### Geld in Zeit zur Veranschaulichung von großen Beträgen: 
+### Geld in Zeit zur Veranschaulichung von großen Beträgen: (fertig)
 Die App fragt nach einem Geldbetrag und gibt Tage bzw. Jahre aus.  
 Hintergrund: Um sich den Unterschied zwischen einer Million und einer Milliarde besser vorzustellen zu können,
 kann das Beispiel mit Sekunden helfen: 11 Tage haben 1 Million Sekunden. Eine Milliarde Sekunden hingegen sind 31,7 Jahre!
